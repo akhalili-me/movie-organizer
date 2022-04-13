@@ -1,8 +1,7 @@
 import re
 import glob, os
-import datetime as dt
+from datetime import datetime
 import shutil
-
 
 
 
@@ -47,7 +46,7 @@ def make_directory(dir):
 
 #App logic
 parent_directory = input("Enter the parent directory: ")
-main_dir = parent_directory +"/"+ dt.datetime.now().strftime('%Y-%m-%d')
+main_dir = parent_directory +"/"+ datetime.now().strftime('%Y-%m-%d')
 
 
 if os.path.exists(main_dir) == False:
