@@ -1,7 +1,6 @@
 import re
 import glob, os
-from datetime import datetime
-import shutil
+
 
 
 
@@ -23,9 +22,21 @@ def name_fix(input):
 
     return output
   
+# Check for tv series
+def check_tv_series(movie_name):
+    """
+    Tv Series Check
+    """
 
-# Get all movie names in a path
-def get_movie_names(path):
+    result = re.findall("S..E..",movie_name)
+
+    if result:
+        return True
+    else:
+        return False
+
+# Get all file names in a path
+def get_all_file_names(path):
     os.chdir(path)
 
     files = []
@@ -33,7 +44,35 @@ def get_movie_names(path):
     for ext in exts:
         files.extend(glob.glob(ext))
     
-    return files
+    result = order_tv_movie(files)
+    return result
+
+
+
+def order_tv_movie(all_files):
+    """
+    Order Tv and Movies
+    """
+    result = []
+
+
+    for file in all_files:
+        fixed_name = name_fix(file)
+
+        if check_tv_series(fixed_name):
+            dic = {
+                'name': file,
+                'type': 'serie'
+            }
+        else:
+            dic = {
+                'name': file,
+                'type': 'movie'
+            }
+        
+        result.append(dic)
+
+    return result
 
     
 # make directory 
@@ -42,29 +81,14 @@ def make_directory(dir):
 
 
 
+def extract_series_name(serie_name):
+    """
+    Extract the series name
+    """
+    result = re.split("S..E..",serie_name)
+    return result[0].strip()
 
 
-#App logic
-parent_directory = input("Enter the parent directory: ")
-main_dir = parent_directory +"/"+ datetime.now().strftime('%Y-%m-%d')
-
-
-if os.path.exists(main_dir) == False:
-    make_directory(main_dir) 
-    
-
-
-all_movie_names = get_movie_names(parent_directory)
-for movie in all_movie_names:
-
-    #Creating movie directory
-    fixed_name = name_fix(movie)
-    folder_dir = main_dir + "/" + fixed_name
-    make_directory(folder_dir)
-
-    # Moving the movie file
-    movie_src = parent_directory +"/"+ movie
-    shutil.move(movie_src,folder_dir)
 
 
 
