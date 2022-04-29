@@ -1,24 +1,54 @@
 import re
 import glob, os
 
+def extract_year(movie):
+    #extract year
+    all_nums = re.findall('[0-9]',movie)
+    result = ''
+
+    try:
+        for i in range(4):
+            result += all_nums[i]
+    except:
+        return ''
+
+    if result != '1080':
+        return result
+    
+    return ''
 
 
-
-# fix movie names
-def name_fix(input):
-
-    result = re.findall("[^._]+",input)
-    output = " ".join(result)
-
+def extract_quality(movie):
     qualities = ['.*480p','.*720p','.*1080p']
     for q in qualities:
-        q_output = re.findall(q,output)
+        q_output = re.findall(q,movie)
 
         if q_output:
             break
 
     if q_output != []:
         return q_output[0]
+
+    return ''
+
+# fix movie names
+def name_fix(input):
+
+    input = re.findall("[^._-]+",input)
+    output = " ".join(input)
+
+    # split from movie date
+    year = extract_year(output)
+    if year:
+        result = re.findall('.*' + year,output)
+        if result != []:
+            return result[0]
+
+    # split from movie quality
+    result = extract_quality(output)
+    if result:
+        return result
+
 
     return output
   
@@ -89,7 +119,18 @@ def extract_series_name(serie_name):
     return result[0].strip()
 
 
+def extract_name_date(movie_name):
+    # Extract the date
+    date = extract_year(movie_name)
+    if date == '':
+        return ''
 
+    # fix movie name
+    fixed_name = movie_name.split()
+    fixed_name.pop()
+
+    result = {'name': fixed_name,'date': date}
+    return result
 
 
 
