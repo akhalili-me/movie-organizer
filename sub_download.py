@@ -1,36 +1,37 @@
 import requests
-import re
-import src
+from src import *
+from bs4 import BeautifulSoup
 
 
-def download_subtitle(url,name):
-    page = requests.get(url).text
-
-    file = re.findall("https.*.zip",page)
-    if file == []:
-        file = re.findall("https.*.rar",page)
-
-    d_file = requests.get(file[0])
-
-    open(name + '.zip', 'wb').write(d_file.content)
+def make_soup(url):
+    response = requests.get(url).text
+    return BeautifulSoup(response,'html.parser')
 
 
 
-def get_movie_subtitle_url(movie_name):
-    # Search for movie
-    movie = src.extract_name_date(movie_name)
-    static_search_query = "https://worldsubtitle.site/?s="
-    movie_url = "+".join(movie['name'])
-    search_query = static_search_query + movie_url
+def get_file_subtitle_url(file):
+    file_name = extract_name(file)
+    url = 'https://worldsubtitle.me/?s=' + file_name.replace(' ', '+')
+    soup = make_soup(url)
 
-    page = requests.get(search_query).text
-    pattern = "https.*-" + movie['date'] + "/"
-    url = re.findall(pattern,page)
+    posters = soup.find_all('div', class_='cat-post-tmp')
+    for div in posters:
+        a_tag = div.find('a')
+        if a_tag['title'] == file_name:
+            return a_tag['href']
 
-    if url != []:
-        return url[0]
+def download_subtitle(url, path):
+    soup = make_soup(url)
+    subtitles = soup.find_all('div', class_='new-link-3')
 
-    return 'Not Found'
+    sub_urls = [item.find('a')['href'] for item in subtitles]
 
+    for sub in sub_urls:
+        response = requests.get(sub)
 
+        file_name = sub.split("/")[-1]
+        file_path = os.path.join(path, file_name)
+
+        with open(file_path, "wb") as f:
+            f.write(response.content)
 
