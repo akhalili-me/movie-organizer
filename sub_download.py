@@ -2,7 +2,6 @@ import requests
 from src import *
 from bs4 import BeautifulSoup
 import os
-from pathlib import Path
 
 def make_soup(url):
     response = requests.get(url).text
