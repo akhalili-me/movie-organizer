@@ -11,7 +11,6 @@ def make_soup(url):
 def get_url(file):
     file_name = extract_name(file)
     url = 'https://worldsubtitle.me/?s=' + file_name.replace(' ', '+')
-    print(url)
     soup = make_soup(url)
 
     posters = soup.find_all('div', class_='cat-post-tmp')
