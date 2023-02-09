@@ -1,37 +1,42 @@
 import requests
 from src import *
 from bs4 import BeautifulSoup
-
+import os
+from pathlib import Path
 
 def make_soup(url):
     response = requests.get(url).text
     return BeautifulSoup(response,'html.parser')
 
-
-
-def get_file_subtitle_url(file):
+def get_url(file):
     file_name = extract_name(file)
     url = 'https://worldsubtitle.me/?s=' + file_name.replace(' ', '+')
+    print(url)
     soup = make_soup(url)
 
     posters = soup.find_all('div', class_='cat-post-tmp')
     for div in posters:
         a_tag = div.find('a')
-        if a_tag['title'] == file_name:
+        if a_tag['title'].lower() == file_name.lower():
             return a_tag['href']
 
-def download_subtitle(url, path):
+def download_subtitle(url,path):
     soup = make_soup(url)
     subtitles = soup.find_all('div', class_='new-link-3')
+    
+    sub_urls = []
+    for item in subtitles:
+        a_tag = item.find('a')
+        if a_tag:
+            sub_urls.append(a_tag.get("href"))
 
-    sub_urls = [item.find('a')['href'] for item in subtitles]
-
-    for sub in sub_urls:
-        response = requests.get(sub)
-
-        file_name = sub.split("/")[-1]
+    for subtitle_url in sub_urls:
+        file_name = subtitle_url.split("/")[-1]
         file_path = os.path.join(path, file_name)
-
-        with open(file_path, "wb") as f:
-            f.write(response.content)
-
+        if os.path.isfile(file_path) == False:
+            try:
+                response = requests.get(subtitle_url)
+                with open(file_path, "wb") as f:
+                    f.write(response.content)
+            except:
+                continue

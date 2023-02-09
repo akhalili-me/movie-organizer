@@ -24,7 +24,7 @@ for file in all_file_names:
     #download subtitle
     print(f'Downloading subtitle for {fixed_name}...')
     url = get_url(file['name'])
-    download_subtitle(url,new_file_dir),print('Done') if url != None else print('Subtitle failed to download ')
+    download_subtitle(url,new_file_dir),print('Done') if url != None else print('Subtitle failed to download')
     print('-------------------------')
 
 

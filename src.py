@@ -3,12 +3,12 @@ import glob, os
 
 def get_movie_info(movie):
     #Extract Year
-    year_pattern = r'\b(?!1080\b)\d{4}\b'
+    year_pattern = r'(?!1080)\d{4}'
     year = re.search(year_pattern,movie)
     year = year.group() if year else 'Not Found'
 
     #Extract Quality
-    quality_pattern = r'\b(480p|720p|1080p)\b'
+    quality_pattern = r'(480p|720p|1080p)'
     quality = re.search(quality_pattern,movie)
     quality = quality.group() if quality else 'Not Found'
  
@@ -16,7 +16,7 @@ def get_movie_info(movie):
 
 #Deletes the extra stuff on movie/serie name
 def name_fix(input):
-    input = re.findall(r'\b[^._-]+\b', input)
+    input = re.findall(r'[^._-]+', input)
     name = " ".join(input)
     movie_info = get_movie_info(name)
     
@@ -58,7 +58,6 @@ def extract_name(file_name):
         return re.split(r'\bS..E..\b',fixed_name)[0].strip()
 
     return fixed_name
-
 
 
 
