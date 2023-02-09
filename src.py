@@ -58,8 +58,3 @@ def extract_name(file_name):
         return re.split(r'\bS..E..\b',fixed_name)[0].strip()
 
     return fixed_name
-
-
-
-
-
